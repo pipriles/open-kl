@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <math.h>
 #include "kool_aid.h"
 
@@ -11,64 +12,71 @@ void klViewport(unsigned int w, unsigned int h) {
 	klScreenHeight = h;
 }
 
-void klRotateX(Matrix m, float deg) {
-	Matrix t = { 
-		{ 1,        0,         0, 0, }, 
-		{ 0, cos(deg), -sin(deg), 0, },
-		{ 0, sin(deg),  cos(deg), 0, },
-		{ 0,        0,         0, 1  },
-	};
+void klRotateX(Matrix m, double deg) {
+	Matrix t = { {1,0,0,0}, {0,1,0,0}, {0,0,1,0}, {0,0,0,1} };
+	t[1][1] =  cos(deg);
+	t[1][2] = -sin(deg);
+	t[2][1] =  sin(deg);
+	t[2][2] =  cos(deg);
 	mm_product(m, t);
 }
 
-void klRotateY(Matrix m, float deg) {
-	Matrix t = {
-		{  cos(deg), 0, sin(deg), 0, },
-		{				  0, 1,        0, 0, },
-		{ -sin(deg), 0, cos(deg), 0, },
-		{         0, 0,        0, 1  },
-	};
+void klRotateY(Matrix m, double deg) {
+	Matrix t = { {1,0,0,0}, {0,1,0,0}, {0,0,1,0}, {0,0,0,1} };
+	t[0][0] =  cos(deg);
+	t[0][2] =  sin(deg);
+	t[2][0] = -sin(deg);
+	t[2][2] =  cos(deg);
 	mm_product(m, t);
 }
 
-void klRotateZ(Matrix m, float deg) {
-	Matrix t = {
-		{ cos(deg), -sin(deg), 0, 0, },
-		{ sin(deg),  cos(deg), 0, 0, },
-		{ 			 0,         0, 1, 0, },
-		{ 			 0,         0, 0, 1  },
-	};
+void klRotateZ(Matrix m, double deg) {
+	Matrix t = { {1,0,0,0}, {0,1,0,0}, {0,0,1,0}, {0,0,0,1} };
+	t[0][0] =  cos(deg);
+	t[0][1] = -sin(deg);
+	t[1][0] =  sin(deg);
+	t[1][1] =  cos(deg);
 	mm_product(m, t);
 }
 
-
-void klTranslate(Matrix m, float x, float y, float z) {
+void klTranslate(Matrix m, double x, double y, double z) {
 	Matrix t = { { 1,0,0,x }, { 0,1,0,y }, { 0,0,1,z }, { 0,0,0,1 } };
 	mm_product(m, t);
 }
 
-void klScale(Matrix m, float x, float y, float z) {
+void klScale(Matrix m, double x, double y, double z) {
 	Matrix t = { { x,0,0,0 }, { 0,y,0,0 }, { 0,0,z,0 }, { 0,0,0,1 } };
 	mm_product(m, t);
 }
 
-void klLookAt(Matrix m, Vector3 e, Vector3 t) {
+void klLookAt(Matrix m, 
+		double eX, double eY, double eZ, 
+		double tX, double tY, double tZ
+		) {
 
 	Vector3 u = { 0, 1, 0 }; /* For now it is 0, 1, 0 */
 	Vector3 f, l;
 	Matrix cam;
 
-	f[0] = e[0] - t[0];
-	f[1] = e[1] - t[1];
-	f[2] = e[2] - t[2];
+	f[0] = eX - tX;
+	f[1] = eY - tY;
+	f[2] = eZ - tZ;
 
-	normalize(f, 4);			/* Normalize forward vector */
-	copy_vector(l, u, 3);	/* Copy forward into left vector */
-	cross_product(l, f);	/* Cross product l(up) and forward */
+	/* Normalize forward vector */
+	normalize(f, 3);
+
+	/* Calculate left vector */
+	memcpy(l, u, 3 * sizeof(double));
+	cross_product(l, f);
+	normalize(l, 3);
+
+	/* Recalculate up vector */
+	memcpy(u, f, 3 * sizeof(double));
+	cross_product(u, l);
 
 	/* Rotation Matrix */
 	rMatrix(cam);
-	klTranslate(cam, -e[0], -e[1], -e[2]);
+	klTranslate(cam, -eX, -eY, -eZ);
 	cam[0][0] = l[0];
 	cam[0][1] = l[1];
 	cam[0][2] = l[2];
@@ -83,15 +91,18 @@ void klLookAt(Matrix m, Vector3 e, Vector3 t) {
 
 }
 
+/* Projection matrix and divide by w 
+ * there is no projection matrix for now
+ */
+
 double klDisplayX(Point p) {
 	/* Assume d is 1 */
-	return p.x / p.z;
+	return p.x / -p.z;
 }
 
 double klDisplayY(Point p) {
 	/* Assume d is 1 */
-
-	return p.y / p.z;
+	return p.y / -p.z;
 }
 
 int klViewportX(const double x) {

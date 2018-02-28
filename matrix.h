@@ -11,9 +11,6 @@ void rMatrix(Matrix);
 void showMatrix(Matrix);
 void showVector(Vector4);
 
-void copy_matrix(Matrix, Matrix);
-void copy_vector(double *, double *, const int);
-
 void mm_product(Matrix, Matrix);
 void mv_product(Matrix, Vector4);
 

@@ -4,8 +4,7 @@
 #include "matrix.h"
 
 typedef struct {
-	double x; double y;
-	double z;
+	double x, y, z;
 } Point;
 
 typedef struct {
@@ -20,12 +19,12 @@ typedef struct {
 } TMesh;
 
 void klViewport(unsigned int, unsigned int);
-void klRotateX(Matrix, float);
-void klRotateY(Matrix, float);
-void klRotateZ(Matrix, float);
-void klTranslate(Matrix, float, float, float);
-void klScale(Matrix, float, float, float);
-void klLookAt(Matrix, Vector3, Vector3);
+void klRotateX(Matrix, double);
+void klRotateY(Matrix, double);
+void klRotateZ(Matrix, double);
+void klTranslate(Matrix, double, double, double);
+void klScale(Matrix, double, double, double);
+void klLookAt(Matrix, double, double, double, double, double, double);
 
 double klDisplayX(Point);
 double klDisplayY(Point);
