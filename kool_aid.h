@@ -26,11 +26,12 @@ void klTranslate(Matrix, double, double, double);
 void klScale(Matrix, double, double, double);
 void klLookAt(Matrix, double, double, double, double, double, double);
 
-double klDisplayX(Point);
-double klDisplayY(Point);
+int klDisplayX(Point, double *x);
+int klDisplayY(Point, double *y);
 
 int klViewportX(const double x);
 int klViewportY(const double y);
+
 int klToViewport(Point v, unsigned int *, unsigned int *);
 
 /* Load mesh from file */

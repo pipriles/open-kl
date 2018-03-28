@@ -76,7 +76,6 @@ void klLookAt(Matrix m,
 
 	/* Rotation Matrix */
 	rMatrix(cam);
-	klTranslate(cam, -eX, -eY, -eZ);
 	cam[0][0] = l[0];
 	cam[0][1] = l[1];
 	cam[0][2] = l[2];
@@ -87,6 +86,10 @@ void klLookAt(Matrix m,
 	cam[2][1] = f[1];
 	cam[2][2] = f[2];
 
+	cam[0][3] = - l[0]*eX - l[1]*eY - l[2]*eZ;
+	cam[1][3] = - u[0]*eX - u[1]*eY - u[2]*eZ;
+	cam[2][3] = - f[0]*eX - f[1]*eY - f[2]*eZ;
+
 	mm_product(m, cam);
 
 }
@@ -95,14 +98,16 @@ void klLookAt(Matrix m,
  * there is no projection matrix for now
  */
 
-double klDisplayX(Point p) {
+int klDisplayX(Point p, double *x) {
 	/* Assume d is 1 */
-	return p.x / -p.z;
+	*x = p.x / -p.z;
+	return p.z < 0;
 }
 
-double klDisplayY(Point p) {
+int klDisplayY(Point p, double *y) {
 	/* Assume d is 1 */
-	return p.y / -p.z;
+	*y = p.y / -p.z;
+	return p.z < 0;
 }
 
 int klViewportX(const double x) {
@@ -117,8 +122,10 @@ int klViewportY(const double y) {
 
 int klToViewport(Point p, unsigned int *x, unsigned int *y) {
 
-	double fx = klDisplayX(p);
-	double fy = klDisplayY(p);
+	double fx, fy;
+	
+	if (!klDisplayX(p, &fx)) return 0;
+	if (!klDisplayY(p, &fy)) return 0;
 
 	if (fx < -1 || fx > 1 || 
 			fy < -1 || fy > 1 ) 

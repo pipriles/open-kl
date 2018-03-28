@@ -53,7 +53,8 @@ int main(int argc, char const* argv[]) {
 	klApplyTMesh(m, &dilo);
 
 	rMatrix(m);
-	klLookAt(m, 0, 0, -1, 0, 0, 0);
+  // klLookAt(m, -1.1, -0.2, -1, 1, 0, -1.2);
+  klLookAt(m, 0, -3, -4, 0, 0, -3.5);
 
 	/* We have to find a workaround */
 	klApplyTMesh(m, &camel);

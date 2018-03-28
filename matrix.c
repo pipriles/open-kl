@@ -40,7 +40,7 @@ void mm_product(Matrix m1, Matrix t) {
 		for(j=0; j < size; j++) {
 			r[i][j] = 0;
 			for(k=0; k < size; k++) 
-				r[i][j] += t[i][k] * m1[k][j];
+				r[i][j] += m1[k][j] * t[i][k];
 		}
 	}
 
